@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { bookingServices, bookingDoctors } from '../../data/availabilityData';
+import { bookingServices, bookingDoctors, confirmBooking } from '../../data/availabilityData';
 import { useBooking } from './BookingContext';
 
 export default function StepConfirm() {
   const { state, update, close } = useBooking();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
   const service = bookingServices.find((s) => s.id === state.serviceId);
@@ -17,10 +19,26 @@ export default function StepConfirm() {
       year: 'numeric',
     });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock submission — would call API here
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    const result = await confirmBooking({
+      service: service?.name || '',
+      doctor: doctor?.name || 'Cualquier disponible',
+      date: state.date ? state.date.toISOString().split('T')[0] : '',
+      time: state.time || '',
+      name: state.patientName,
+      phone: state.patientPhone,
+    });
+
+    setLoading(false);
+    if (result.success) {
+      setSubmitted(true);
+    } else {
+      setError(result.error || 'Ocurrió un error al agendar la cita.');
+    }
   };
 
   if (submitted) {
@@ -109,7 +127,12 @@ export default function StepConfirm() {
             {state.date && formatDate(state.date)} — {state.time}
           </span>
         </div>
-      </div>
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
+          {error}
+        </div>
+      )}
+    </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -166,10 +189,17 @@ export default function StepConfirm() {
 
         <button
           type="submit"
-          disabled={!state.patientName || !state.patientPhone}
-          className="w-full primary-gradient text-white py-4 rounded-xl font-headline font-bold text-base shadow-lg hover:shadow-xl transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading || !state.patientName || !state.patientPhone}
+          className="w-full primary-gradient text-white py-4 rounded-xl font-headline font-bold text-base shadow-lg hover:shadow-xl transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Confirmar Cita
+          {loading ? (
+            <>
+              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Procesando...
+            </>
+          ) : (
+            'Confirmar Cita'
+          )}
         </button>
       </form>
     </div>
