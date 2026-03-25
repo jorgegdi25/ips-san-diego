@@ -12,11 +12,26 @@ export default async function handler(
   try {
     const { service, doctor, date, time, name, phone } = req.body;
 
+    // Diagnóstico (esto aparecerá en los logs de Vercel)
+    console.log('--- Iniciando Reserva ---');
+    console.log('Email del bot:', process.env.GOOGLE_CLIENT_EMAIL);
+    console.log('ID Calendario:', process.env.GOOGLE_CALENDAR_ID);
+    console.log('¿Existe llave privada?:', !!process.env.GOOGLE_PRIVATE_KEY);
+
+    // Limpiar la llave privada (Vercel a veces escapa mal los \n)
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY
+      ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '')
+      : undefined;
+
+    if (!privateKey || !process.env.GOOGLE_CLIENT_EMAIL) {
+      throw new Error('Faltan credenciales de Google en las variables de entorno.');
+    }
+
     // Configuración de autenticación con Service Account
     const auth = new google.auth.JWT(
       process.env.GOOGLE_CLIENT_EMAIL,
       undefined,
-      process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      privateKey,
       ['https://www.googleapis.com/auth/calendar']
     );
 
