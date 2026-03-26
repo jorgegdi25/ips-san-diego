@@ -72,7 +72,10 @@ export default async function handler(
       },
     };
 
-    console.log('Enviando evento a Google...');
+    console.log('--- ENVIANDO A GOOGLE ---');
+    console.log('JSON START:', JSON.stringify(event.start));
+    console.log('JSON END:', JSON.stringify(event.end));
+    
     await calendar.events.insert({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event,
