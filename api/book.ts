@@ -27,15 +27,18 @@ export default async function handler(
       throw new Error('Faltan credenciales de Google en las variables de entorno.');
     }
 
-    // Configuración de autenticación con Service Account
-    const auth = new google.auth.JWT(
-      process.env.GOOGLE_CLIENT_EMAIL,
-      undefined,
-      privateKey,
-      ['https://www.googleapis.com/auth/calendar']
-    );
+    // Configuración de autenticación moderna con GoogleAuth
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: privateKey,
+      },
+      scopes: ['https://www.googleapis.com/auth/calendar'],
+    });
 
-    const calendar = google.calendar({ version: 'v3', auth });
+    // Obtener un cliente autenticado explícitamente
+    const authClient = await auth.getClient();
+    const calendar = google.calendar({ version: 'v3', auth: authClient as any });
 
     // Definir horario de inicio y fin (asumimos 1 hora por defecto)
     const startDateTime = new Date(`${date}T${time}:00`);
@@ -51,7 +54,7 @@ export default async function handler(
       `.trim(),
       start: {
         dateTime: startDateTime.toISOString(),
-        timeZone: 'America/Bogota', // Ajustar a la zona horaria de San Diego (Ips)
+        timeZone: 'America/Bogota',
       },
       end: {
         dateTime: endDateTime.toISOString(),
@@ -66,6 +69,7 @@ export default async function handler(
       },
     };
 
+    console.log('Enviando evento a Google...');
     await calendar.events.insert({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event,
