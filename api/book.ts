@@ -12,17 +12,12 @@ export default async function handler(
   try {
     const { service, doctor, date, time, name, phone } = req.body;
 
-    // Diagnóstico (esto aparecerá en los logs de Vercel)
-    console.log('--- Diagnóstico de Variables ---');
-    console.log('Variables GOOGLE_ detectadas:', Object.keys(process.env).filter(k => k.startsWith('GOOGLE')));
-
     const privateKey = process.env.GOOGLE_PRIVATE_KEY
       ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '')
       : undefined;
 
     if (!privateKey || !process.env.GOOGLE_CLIENT_EMAIL) {
-      console.log('ERROR: Falta llave o email.');
-      throw new Error(`Faltan credenciales. Detectadas: ${Object.keys(process.env).filter(k => k.startsWith('GOOGLE')).join(', ')}`);
+      throw new Error('Faltan credenciales de Google (Email o Private Key) en Vercel.');
     }
 
     // Configuración de autenticación moderna con GoogleAuth
@@ -72,10 +67,6 @@ export default async function handler(
       },
     };
 
-    console.log('--- ENVIANDO A GOOGLE ---');
-    console.log('JSON START:', JSON.stringify(event.start));
-    console.log('JSON END:', JSON.stringify(event.end));
-    
     await calendar.events.insert({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
       requestBody: event,

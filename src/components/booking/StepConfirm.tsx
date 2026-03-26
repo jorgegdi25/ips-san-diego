@@ -55,7 +55,7 @@ export default function StepConfirm() {
           </h3>
           <p className="text-sm text-on-surface-variant max-w-sm mx-auto">
             Hemos registrado tu cita. Te enviaremos un recordatorio por
-            WhatsApp al número {state.patientPhone}.
+            WhatsApp al número {state.patientPhone}. Si necesitas reprogramar, por favor escríbenos por este mismo medio.
           </p>
         </div>
 
