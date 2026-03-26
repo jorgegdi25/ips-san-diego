@@ -17,11 +17,17 @@ export default async function handler(
   }
 
   try {
+    // Diagnóstico
+    console.log('--- Diagnóstico CRM ---');
+    console.log('Sheet ID:', process.env.GOOGLE_SHEET_ID);
+    console.log('Email:', process.env.GOOGLE_CLIENT_EMAIL);
+
     const privateKey = process.env.GOOGLE_PRIVATE_KEY
       ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/"/g, '')
       : undefined;
 
     if (!privateKey || !process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_SHEET_ID) {
+      console.log('ERROR: Faltan variables.');
       throw new Error('Faltan credenciales de Google o ID de Hoja en Vercel.');
     }
 
