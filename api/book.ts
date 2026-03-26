@@ -26,7 +26,10 @@ export default async function handler(
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
         private_key: privateKey,
       },
-      scopes: ['https://www.googleapis.com/auth/calendar'],
+      scopes: [
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/spreadsheets'
+      ],
     });
 
     // Obtener un cliente autenticado explícitamente
