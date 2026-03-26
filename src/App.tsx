@@ -13,8 +13,15 @@ import LocationSection from './components/LocationSection'
 import Footer from './components/Footer'
 import FloatingWhatsApp from './components/FloatingWhatsApp'
 import AssistantBot from './components/AssistantBot'
+import AdminDashboard from './components/admin/AdminDashboard'
 
 function App() {
+  const isAdmin = window.location.pathname === '/admin' || window.location.hash === '#admin';
+
+  if (isAdmin) {
+    return <AdminDashboard />;
+  }
+
   return (
     <BookingProvider>
       <Navbar />

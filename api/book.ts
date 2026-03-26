@@ -72,9 +72,32 @@ export default async function handler(
       requestBody: event,
     });
 
+    // --- NUEVO: GUARDAR EN GOOGLE SHEETS (CRM) ---
+    if (process.env.GOOGLE_SHEET_ID) {
+      const sheets = google.sheets({ version: 'v4', auth: authClient as any });
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'A:G', // Asumiendo que la primera pestaña está vacía
+        valueInputOption: 'USER_ENTERED',
+        requestBody: {
+          values: [
+            [
+              new Date().toLocaleString('es-CO'), // Registro
+              `${date} ${time}`, // Cita
+              name,
+              phone,
+              service,
+              doctor,
+              'Nueva' // Estatus inicial
+            ]
+          ]
+        }
+      });
+    }
+
     return res.status(200).json({ 
       success: true, 
-      message: 'Cita agendada correctamente en Google Calendar.' 
+      message: 'Cita agendada correctamente en Google Calendar y CRM.' 
     });
   } catch (error: any) {
     console.error('Error creating event:', error);
