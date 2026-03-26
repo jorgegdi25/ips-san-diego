@@ -39,8 +39,13 @@ export default async function handler(
     const calendar = google.calendar({ version: 'v3', auth: authClient as any });
 
     // Definir horario de inicio y fin (asumimos 1 hora por defecto)
-    const startDateTime = new Date(`${date}T${time}:00`);
-    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+    // Usamos el formato local ISO (sin la Z) para que Google respete la TimeZone
+    const startDateTimeStr = `${date}T${time}:00`;
+    
+    // Calculamos el fin sumando 1 hora a la hora de inicio
+    const [h, m] = time.split(':').map(Number);
+    const endHour = String(h + 1).padStart(2, '0');
+    const endDateTimeStr = `${date}T${endHour}:${String(m).padStart(2, '0')}:00`;
 
     const event = {
       summary: `Cita Médica: ${service} - IPS San Diego`,
@@ -51,11 +56,11 @@ export default async function handler(
         Teléfono: ${phone}
       `.trim(),
       start: {
-        dateTime: startDateTime.toISOString(),
+        dateTime: startDateTimeStr,
         timeZone: 'America/Bogota',
       },
       end: {
-        dateTime: endDateTime.toISOString(),
+        dateTime: endDateTimeStr,
         timeZone: 'America/Bogota',
       },
       reminders: {
