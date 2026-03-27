@@ -37,7 +37,7 @@ export default async function handler(
     try {
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Contenido!A:C', // Buscamos la pestaña "Contenido"
+        range: 'Contenido!A:C',
       });
 
       const rows = response.data.values;
@@ -45,52 +45,67 @@ export default async function handler(
          throw new Error('No content rows found');
       }
 
-      // Convertir filas a objeto anidado
+      // Helper: set a value at a deep path like "credentials.0" or "highlights.0.icon"
+      const setDeep = (obj: any, pathStr: string, value: any) => {
+        const parts = pathStr.split('.');
+        let current = obj;
+        for (let i = 0; i < parts.length - 1; i++) {
+          const key = parts[i];
+          const nextKey = parts[i + 1];
+          // Decide if next level should be array or object
+          if (current[key] === undefined) {
+            current[key] = /^\d+$/.test(nextKey) ? [] : {};
+          }
+          current = current[key];
+        }
+        current[parts[parts.length - 1]] = value;
+      };
+
+      // Convert flat rows [section, dotPath, value] into nested object
       const fetchedContent: any = {};
       rows.forEach((row) => {
         const [section, field, value] = row;
-        if (!section || !field) return;
+        if (!section || !field || value === undefined) return;
         
         if (!fetchedContent[section]) {
-           fetchedContent[section] = {};
+          // Check if the first field starts with a digit => section is an array
+          fetchedContent[section] = {};
         }
         
-        if (field.includes('.')) {
-          const [indexStr, key] = field.split('.');
-          const index = parseInt(indexStr);
-          if (!fetchedContent[section][index]) {
-             fetchedContent[section][index] = {};
-          }
-          fetchedContent[section][index][key] = value;
-        } else {
-          fetchedContent[section][field] = value;
-        }
+        setDeep(fetchedContent[section], field, value);
       });
 
-      // Asegurar que si la hoja de cálculo guardó arreglos como objetos con índices (ej: services[0]), se conviertan a arreglos de verdad
-      for (const section in fetchedContent) {
-        // Un heurístico sencillo: si el objeto tiene clave '0' y no tiene otras llaves no numéricas, lo convertimos a arreglo
-        const sectionData = fetchedContent[section];
-        const keys = Object.keys(sectionData);
-        if (keys.length > 0 && keys.every(k => !isNaN(parseInt(k)))) {
-            // Es un arreglo simulado
-            const arr: any[] = [];
-            keys.forEach(k => {
-                arr[parseInt(k)] = sectionData[k];
-            });
-            fetchedContent[section] = arr;
+      // Convert numeric-keyed objects to arrays recursively
+      const convertArrays = (obj: any): any => {
+        if (obj === null || obj === undefined || typeof obj !== 'object') return obj;
+        
+        const keys = Object.keys(obj);
+        // If all keys are numeric, convert to array
+        if (keys.length > 0 && keys.every(k => /^\d+$/.test(k))) {
+          const arr: any[] = [];
+          keys.forEach(k => {
+            arr[parseInt(k)] = convertArrays(obj[k]);
+          });
+          return arr;
         }
-      }
+        
+        // Otherwise recurse into each key
+        const result: any = {};
+        for (const k of keys) {
+          result[k] = convertArrays(obj[k]);
+        }
+        return result;
+      };
 
-      // Merge with local fallback data to ensure newly added sections exist
+      const reconstructed = convertArrays(fetchedContent);
+
+      // Merge with local fallback data to fill any missing sections
       const localPath = path.join(process.cwd(), 'src/data/content.json');
       const localData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
-      
-      const mergedContent = { ...localData, ...fetchedContent };
+      const mergedContent = { ...localData, ...reconstructed };
 
       return res.status(200).json(mergedContent);
     } catch (sheetError) {
-      // Si la pestaña no existe o falla, fallback al local
       console.warn('Google Sheets Content tab error, falling back to local JSON:', sheetError);
       const localPath = path.join(process.cwd(), 'src/data/content.json');
       const localData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
