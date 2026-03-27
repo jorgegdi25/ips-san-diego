@@ -49,8 +49,9 @@ export default async function handler(
 
   try {
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
-    }, { apiVersion: 'v1' });
+      model: "gemini-2.5-flash",
+      systemInstruction: SYSTEM_PROMPT,
+    }); // Usar el comportamiento por defecto del SDK (v1beta)
 
     // Convertir el historial al formato de Gemini
     let history = messages.slice(0, -1).map((m: any) => ({
@@ -63,15 +64,8 @@ export default async function handler(
       history.shift();
     }
 
-    // --- IMPORTANTE: INYECTAR EL "SYSTEM PROMPT" COMO PRIMER MENSAJE DE HISTORIAL EN V1 ---
-    const primedHistory = [
-      { role: 'user' as 'user', parts: [{ text: SYSTEM_PROMPT }] },
-      { role: 'model' as 'model', parts: [{ text: 'Entendido. Soy el asistente oficial de San Diego IPS. ¿En qué puedo ayudarte hoy?' }] },
-      ...history
-    ];
-
     const chat = model.startChat({
-      history: primedHistory,
+      history: history,
       generationConfig: {
         maxOutputTokens: 500,
       },
