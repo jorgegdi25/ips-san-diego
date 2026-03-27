@@ -53,11 +53,16 @@ export default async function handler(
       systemInstruction: SYSTEM_PROMPT,
     });
 
-    // Convertir el historial al formato de Gemini
-    const history = messages.slice(0, -1).map((m: any) => ({
-      role: m.role === 'user' ? 'user' : 'model',
+    // Convertir el historial al formato de Gemini, asegurando que empiece con un mensaje de 'user'
+    let history = messages.slice(0, -1).map((m: any) => ({
+      role: m.role === 'user' ? 'user' : 'model' as 'user' | 'model',
       parts: [{ text: m.content }],
     }));
+
+    // El primer mensaje en el historial de Gemini DEBE ser de 'user'
+    while (history.length > 0 && history[0].role !== 'user') {
+      history.shift();
+    }
 
     const chat = model.startChat({
       history: history,
