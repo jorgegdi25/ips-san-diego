@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useContent } from '../ContentContext';
 
 interface Booking {
   id: number;
@@ -17,11 +18,15 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'content'>('bookings');
+  
+  const { setIsEditorActive } = useContent();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length > 0) {
       setIsLoggedIn(true);
+      localStorage.setItem('adminToken', password);
       fetchBookings(password);
     }
   };
@@ -48,6 +53,7 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
 
   if (!isLoggedIn) {
     return (
@@ -89,82 +95,134 @@ export default function AdminDashboard() {
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="font-display text-3xl font-bold text-white">Panel de Pacientes</h1>
-            <p className="text-neutral-400">Gestiona tus citas de Google Sheets en tiempo real</p>
+            <h1 className="font-display text-3xl font-bold text-white">Administración</h1>
+            <div className="flex gap-4 mt-2">
+              <button 
+                onClick={() => setActiveTab('bookings')}
+                className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'bookings' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
+              >
+                Pacientes
+              </button>
+              <button 
+                onClick={() => setActiveTab('content')}
+                className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'content' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
+              >
+                Contenido Web
+              </button>
+            </div>
           </div>
-          <button 
-            onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm transition-all flex items-center gap-2 border border-white/10"
-          >
-             <span className="material-symbols-outlined text-sm">refresh</span>
-             Actualizar Lista
-          </button>
+          <div className="flex items-center gap-3">
+            {activeTab === 'bookings' && (
+              <button 
+                onClick={() => fetchBookings(password)}
+                className="px-6 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm transition-all flex items-center gap-2 border border-white/10 text-white"
+              >
+                 <span className="material-symbols-outlined text-sm">refresh</span>
+                 Actualizar Lista
+              </button>
+            )}
+            <button 
+              onClick={() => {
+                setIsEditorActive(true);
+                window.location.href = '/';
+              }}
+              className="px-6 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-600/20"
+            >
+               <span className="material-symbols-outlined text-sm">edit_document</span>
+               Abrir Editor Visual
+            </button>
+          </div>
         </div>
 
-        <div className="bg-neutral-900 rounded-3xl shadow-xl overflow-hidden border border-white/5">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-white/5 text-xs font-headline font-bold text-neutral-400 uppercase tracking-widest border-b border-white/5">
-                  <th className="px-6 py-4">F. Cita</th>
-                  <th className="px-6 py-4">Paciente</th>
-                  <th className="px-6 py-4">Contacto</th>
-                  <th className="px-6 py-4">Servicio / Doctor</th>
-                  <th className="px-6 py-4">Estado</th>
-                  <th className="px-6 py-4">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {loading ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
-                       <span className="animate-spin inline-block mr-2 text-amber-600">⏳</span> Cargando pacientes...
-                    </td>
+        {activeTab === 'bookings' ? (
+          <div className="bg-neutral-900 rounded-3xl shadow-xl overflow-hidden border border-white/5">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-white/5 text-xs font-headline font-bold text-neutral-400 uppercase tracking-widest border-b border-white/5">
+                    <th className="px-6 py-4">F. Cita</th>
+                    <th className="px-6 py-4">Paciente</th>
+                    <th className="px-6 py-4">Contacto</th>
+                    <th className="px-6 py-4">Servicio / Doctor</th>
+                    <th className="px-6 py-4">Estado</th>
+                    <th className="px-6 py-4">Acción</th>
                   </tr>
-                ) : bookings.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-neutral-500 italic">No hay citas registradas aún.</td>
-                  </tr>
-                ) : bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-white/5 transition-colors text-sm">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-amber-500">{b.appointment.split(' ')[0]}</div>
-                      <div className="text-xs text-neutral-400">{b.appointment.split(' ')[1]}</div>
-                    </td>
-                    <td className="px-6 py-4 font-display text-base font-medium">{b.name}</td>
-                    <td className="px-6 py-4">
-                      <a 
-                        href={`https://wa.me/${b.phone.replace(/\D/g, '')}`} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="text-amber-600 hover:text-amber-500 hover:underline flex items-center gap-1"
-                      >
-                         <span className="material-symbols-outlined text-base">chat</span>
-                         {b.phone}
-                      </a>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs font-bold text-neutral-300 uppercase">{b.service}</div>
-                      <div className="text-xs text-neutral-500 italic">{b.doctor}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                       <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${
-                         b.status === 'Nueva' ? 'bg-amber-600/20 text-amber-500' : 'bg-green-500/20 text-green-500'
-                       }`}>
-                         {b.status}
-                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                       <button className="text-neutral-500 hover:text-white transition-colors">
-                          <span className="material-symbols-outlined">edit</span>
-                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
+                         <span className="animate-spin inline-block mr-2 text-amber-600">⏳</span> Cargando pacientes...
+                      </td>
+                    </tr>
+                  ) : bookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-neutral-500 italic">No hay citas registradas aún.</td>
+                    </tr>
+                  ) : bookings.map((b) => (
+                    <tr key={b.id} className="hover:bg-white/5 transition-colors text-sm">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-amber-500">{b.appointment.split(' ')[0]}</div>
+                        <div className="text-xs text-neutral-400">{b.appointment.split(' ')[1]}</div>
+                      </td>
+                      <td className="px-6 py-4 font-display text-base font-medium">{b.name}</td>
+                      <td className="px-6 py-4">
+                        <a 
+                          href={`https://wa.me/${b.phone.replace(/\D/g, '')}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-amber-600 hover:text-amber-500 hover:underline flex items-center gap-1"
+                        >
+                           <span className="material-symbols-outlined text-base">chat</span>
+                           {b.phone}
+                        </a>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-xs font-bold text-neutral-300 uppercase">{b.service}</div>
+                        <div className="text-xs text-neutral-500 italic">{b.doctor}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${
+                           b.status === 'Nueva' ? 'bg-amber-600/20 text-amber-500' : 'bg-green-500/20 text-green-500'
+                         }`}>
+                           {b.status}
+                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                         <button className="text-neutral-500 hover:text-white transition-colors">
+                            <span className="material-symbols-outlined">edit</span>
+                         </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-neutral-900 border border-white/5 p-12 rounded-3xl text-center space-y-6 w-full mx-auto max-w-2xl mt-12">
+            <div className="w-20 h-20 bg-amber-600/20 rounded-full mx-auto flex items-center justify-center">
+              <span className="material-symbols-outlined text-amber-500 text-4xl">view_quilt</span>
+            </div>
+            <div>
+              <h2 className="font-display text-2xl font-bold text-white mb-2">Editor Visual Activado</h2>
+              <p className="text-neutral-400">
+                Ahora puedes editar todos los textos e imágenes de la página web directamente sobre el diseño final. 
+                Es mucho más intuitivo y visual que editar formularios aquí.
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                setIsEditorActive(true);
+                window.location.href = '/';
+              }}
+              className="mt-6 inline-flex items-center gap-2 px-8 py-4 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 transition-all shadow-lg hover:-translate-y-1"
+            >
+              <span className="material-symbols-outlined">launch</span>
+              Abrir Editor Visual
+            </button>
+          </div>
+        )}
         
         <div className="text-center">
            <p className="text-xs text-neutral-600 uppercase tracking-widest">Base de Datos: Google Sheets Conectado</p>

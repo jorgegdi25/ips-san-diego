@@ -1,0 +1,120 @@
+{
+  "hero": {
+    "title": "Transformamos sonrisas con experiencia y precisión",
+    "subtitle": "Atención odontológica especializada enfocada en salud, estética y confianza. Descubre el estándar de cuidado que mereces.",
+    "primaryButton": "Agendar valoración",
+    "secondaryButton": "Ver tratamientos",
+    "image": "https://as2.ftcdn.net/v2/jpg/06/17/10/17/1000_F_617101788_rPcd8eND6DTdtzuI69rEDCHwxjZiQXBV.jpg",
+    "badgeIcon": "verified_user",
+    "badgeTitle": "Calidad Certificada",
+    "badgeText": "Equipos de última generación para diagnósticos 100% precisos."
+  },
+  "services": [
+    {
+      "title": "Diseño de sonrisa",
+      "description": "Perfeccionamos la armonía de tus dientes integrando estética y funcionalidad personalizada.",
+      "image": "https://as1.ftcdn.net/v2/jpg/02/30/67/74/1000_F_230677493_vtaLxyzaqopkAHruJZdgcuAbkJ35Gss1.jpg",
+      "imageAlt": "Diseño de sonrisa"
+    },
+    {
+      "title": "Endodoncia",
+      "description": "Tratamientos de conducto indoloros con tecnología rotatoria para salvar tus piezas naturales.",
+      "image": "https://as2.ftcdn.net/v2/jpg/18/27/36/55/1000_F_1827365516_iOp9rZBiSP8BcIEYMMprXKnVGrkfFD3F.jpg",
+      "imageAlt": "Endodoncia"
+    },
+    {
+      "title": "Periodoncia",
+      "description": "Cuidado integral de encías y tejidos de soporte para una base bucal saludable y firme.",
+      "image": "https://as2.ftcdn.net/v2/jpg/03/16/55/83/1000_F_316558318_UfmMElb061rcdPSUJSkEqMcH6uQad63y.jpg",
+      "imageAlt": "Periodoncia"
+    },
+    {
+      "title": "Cirugía oral",
+      "description": "Procedimientos quirúrgicos especializados con recuperación acelerada y mínima invasión.",
+      "image": "https://as1.ftcdn.net/v2/jpg/02/96/76/58/1000_F_296765862_5OWYuaf5LVMigppvqwQ1thQtCKo6qMQm.jpg",
+      "imageAlt": "Cirugía oral"
+    },
+    {
+      "title": "Consulta preventiva",
+      "description": "Mantenimiento preventivo periódico para detectar a tiempo cualquier afección dental.",
+      "image": "https://as2.ftcdn.net/v2/jpg/02/23/18/11/1000_F_223181186_Nybf9ZKPOZs1AcvMTQ81FTJusYrB7fFK.jpg",
+      "imageAlt": "Consulta preventiva"
+    }
+  ],
+  "contact": {
+    "address": "Calle 100 #15-32, Edificio Profesional, Bogotá DC",
+    "schedule": "Lun - Vie: 8:00 AM - 7:00 PM\nSábados: 9:00 AM - 2:00 PM",
+    "email": "info@sandiegoips.com",
+    "phone": "+57 601 234 5678",
+    "whatsappUrl": "https://wa.me/yourphonenumber"
+  },
+  "location": {
+    "title": "Nuestra Sede Principal",
+    "description": "Visítanos en nuestras instalaciones diseñadas para brindarte confort y tranquilidad desde tu ingreso.",
+    "mapImage": "https://as1.ftcdn.net/v2/jpg/08/06/60/98/1000_F_806609835_4NcPC8w07RG0nQgfOc1cIwdgENLN2EP7.jpg",
+    "interiorImage": "https://as2.ftcdn.net/v2/jpg/06/37/42/51/1000_F_637425114_3lLwo1G8kLG53rYY3Mb9jRmmnBF2v7UY.jpg"
+  },
+  "doctor": {
+    "title": "Conoce a tu especialista",
+    "name": "Dr. Gustavo Sánchez",
+    "role": "Director Clínico & Especialista en Rehabilitación Oral",
+    "quote": "\"Mi compromiso es transformar la experiencia odontológica en un momento de confianza y bienestar para cada paciente.\"",
+    "description": "Con más de 25 años dedicados a la odontología de precisión, el Dr. Gustavo Sánchez lidera San Diego IPS con una filosofía centrada en el paciente. Su formación internacional y su pasión por la tecnología de vanguardia le permiten ofrecer tratamientos con los más altos estándares clínicos, combinando ciencia y arte en cada procedimiento.",
+    "image": "/doctor-gustavo.png",
+    "credentials": [
+      "Odontólogo – Universidad Javeriana (1998)",
+      "Especialista en Rehabilitación Oral – Universidad El Bosque",
+      "Diplomado en Implantología Avanzada – NYU College of Dentistry",
+      "Miembro de la Federación Odontológica Colombiana"
+    ],
+    "highlights": [
+      { "icon": "school", "label": "+25 años de experiencia clínica" },
+      { "icon": "workspace_premium", "label": "Certificación internacional" },
+      { "icon": "groups", "label": "+18.000 pacientes atendidos" },
+      { "icon": "favorite", "label": "Enfoque humano y personalizado" }
+    ]
+  },
+  "authority": {
+    "title": "Experiencia que marca la diferencia",
+    "description": "Combinamos décadas de práctica clínica con tecnología de vanguardia para garantizar resultados predecibles y una experiencia libre de dolor.",
+    "stats": [
+      { "value": "+25", "label": "Años de experiencia clínica" },
+      { "value": "+18k", "label": "Pacientes atendidos exitosamente" },
+      { "value": "100%", "label": "Supervisión especializada" }
+    ]
+  },
+  "results": {
+    "title": "Resultados reales en pacientes reales",
+    "images": [
+      "https://images.unsplash.com/photo-1606265752439-1ebeb120b63f?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1598256989417-c5d0121d5c58?q=80&w=2074&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?q=80&w=2070&auto=format&fit=crop"
+    ]
+  },
+  "testimonials": [
+    {
+      "name": "Carolina Méndez",
+      "role": "Paciente Ortodoncia",
+      "text": "Llegué a San Diego IPS por una recomendación y superaron mis expectativas. El trato es muy humano y me explicaron cada paso de mi diseño de sonrisa. Estoy feliz.",
+      "avatar": "https://i.pravatar.cc/150?u=carolina"
+    },
+    {
+      "name": "Roberto Jiménez",
+      "role": "Paciente Implantes",
+      "text": "Tenía mucho miedo a los implantes dentales, pero el Dr. Sánchez y su equipo me dieron confianza desde el día uno. Ya puedo masticar sin problemas y el resultado estético es increíble.",
+      "avatar": "https://i.pravatar.cc/150?u=roberto"
+    },
+    {
+      "name": "Ana Rodríguez",
+      "role": "Paciente Rehabilitación",
+      "text": "Las instalaciones son modernas e impecables, y nunca me hacen esperar. La atención es verdaderamente premium y los precios son muy transparentes.",
+      "avatar": "https://i.pravatar.cc/150?u=ana"
+    }
+  ],
+  "cta": {
+    "title": "Agenda tu valoración hoy y recibe diagnóstico profesional",
+    "description": "El primer paso hacia tu nueva sonrisa comienza con una cita personalizada. Nuestro equipo está listo para atenderte.",
+    "buttonText": "Reservar Cita Ahora"
+  }
+}

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { navLinks } from '../data/siteData';
 import { useBooking } from './booking/BookingContext';
+import { useContent } from './ContentContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { open: openBooking } = useBooking();
+  const { isEditorActive } = useContent();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -15,7 +17,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
+      className={`fixed w-full z-50 transition-all duration-300 ${isEditorActive ? 'top-[60px]' : 'top-0'} ${
         scrolled
           ? 'bg-white/70 backdrop-blur-md shadow-[0_12px_40px_rgba(27,28,28,0.06)]'
           : 'bg-white/70 backdrop-blur-md shadow-[0_12px_40px_rgba(27,28,28,0.06)]'

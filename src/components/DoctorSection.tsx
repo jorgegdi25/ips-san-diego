@@ -1,43 +1,55 @@
-export default function DoctorSection() {
-  const credentials = [
-    'Odontólogo – Universidad Javeriana (1998)',
-    'Especialista en Rehabilitación Oral – Universidad El Bosque',
-    'Diplomado en Implantología Avanzada – NYU College of Dentistry',
-    'Miembro de la Federación Odontológica Colombiana',
-  ];
+import { useContent } from './ContentContext';
+import EditableText from './editor/EditableText';
+import EditableImage from './editor/EditableImage';
 
-  const highlights = [
-    { icon: 'school', label: '+25 años de experiencia clínica' },
-    { icon: 'workspace_premium', label: 'Certificación internacional' },
-    { icon: 'groups', label: '+18.000 pacientes atendidos' },
-    { icon: 'favorite', label: 'Enfoque humano y personalizado' },
-  ];
+export default function DoctorSection() {
+  const { content, loading } = useContent();
+
+  const doctor = content?.doctor;
+
+  if (loading || !doctor) {
+    return <div className="h-[600px] animate-pulse bg-surface" />;
+  }
 
   return (
     <section id="especialistas" className="py-28 bg-surface">
       <div className="max-w-7xl mx-auto px-8">
         {/* Section header */}
         <div className="text-center mb-16">
-          <span className="font-headline font-bold text-xs uppercase tracking-[0.2em] text-primary-container mb-4 block">
-            Conoce a tu especialista
-          </span>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-on-surface">
-            Dr. Gustavo Sánchez
-          </h2>
-          <p className="text-on-surface-variant mt-4 max-w-2xl mx-auto text-lg">
-            Director Clínico &amp; Especialista en Rehabilitación Oral
-          </p>
+          <EditableText
+            section="doctor"
+            fieldPath="title"
+            value={doctor.title}
+            as="span"
+            className="font-headline font-bold text-xs uppercase tracking-[0.2em] text-primary-container mb-4 block"
+          />
+          <EditableText
+            section="doctor"
+            fieldPath="name"
+            value={doctor.name}
+            as="h2"
+            className="font-display text-4xl md:text-5xl font-bold text-on-surface"
+          />
+          <EditableText
+            section="doctor"
+            fieldPath="role"
+            value={doctor.role}
+            as="p"
+            className="text-on-surface-variant mt-4 max-w-2xl mx-auto text-lg block"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           {/* Photo */}
           <div className="lg:col-span-5">
             <div className="relative">
-              <div className="rounded-3xl overflow-hidden editorial-shadow">
-                <img
-                  src="/doctor-gustavo.png"
-                  alt="Dr. Gustavo Sánchez"
-                  className="w-full h-[550px] object-cover object-top"
+              <div className="rounded-3xl overflow-hidden editorial-shadow h-[550px]">
+                <EditableImage
+                  section="doctor"
+                  fieldPath="image"
+                  src={doctor.image}
+                  alt={doctor.name}
+                  className="w-full h-full object-cover object-top"
                 />
               </div>
               {/* Floating accent */}
@@ -55,18 +67,23 @@ export default function DoctorSection() {
 
           {/* Info */}
           <div className="lg:col-span-7 space-y-8">
-            <blockquote className="text-xl md:text-2xl font-display italic text-on-surface-variant leading-relaxed border-l-4 border-primary-container pl-6">
-              "Mi compromiso es transformar la experiencia odontológica en un momento de confianza y bienestar para cada paciente."
-            </blockquote>
+            <EditableText
+              section="doctor"
+              fieldPath="quote"
+              value={doctor.quote}
+              multiline
+              as="blockquote"
+              className="text-xl md:text-2xl font-display italic text-on-surface-variant leading-relaxed border-l-4 border-primary-container pl-6 block"
+            />
 
-            <p className="text-on-surface-variant leading-relaxed">
-              Con más de 25 años dedicados a la odontología de precisión, el Dr.
-              Gustavo Sánchez lidera San Diego IPS con una filosofía centrada en
-              el paciente. Su formación internacional y su pasión por la
-              tecnología de vanguardia le permiten ofrecer tratamientos con los
-              más altos estándares clínicos, combinando ciencia y arte en cada
-              procedimiento.
-            </p>
+            <EditableText
+              section="doctor"
+              fieldPath="description"
+              value={doctor.description}
+              multiline
+              as="p"
+              className="text-on-surface-variant leading-relaxed block"
+            />
 
             {/* Credentials */}
             <div>
@@ -74,12 +91,18 @@ export default function DoctorSection() {
                 Formación Académica
               </h3>
               <ul className="space-y-3">
-                {credentials.map((cred) => (
-                  <li key={cred} className="flex items-start gap-3">
+                {doctor.credentials.map((cred, i) => (
+                  <li key={i} className="flex items-start gap-3">
                     <span className="material-symbols-outlined text-primary-container text-lg mt-0.5">
                       check_circle
                     </span>
-                    <span className="text-sm text-on-surface-variant">{cred}</span>
+                    <EditableText
+                      section="doctor"
+                      fieldPath={`credentials.${i}`}
+                      value={cred}
+                      as="span"
+                      className="text-sm text-on-surface-variant flex-1"
+                    />
                   </li>
                 ))}
               </ul>
@@ -87,17 +110,25 @@ export default function DoctorSection() {
 
             {/* Highlights grid */}
             <div className="grid grid-cols-2 gap-4 pt-4">
-              {highlights.map((h) => (
+              {doctor.highlights.map((h, i) => (
                 <div
-                  key={h.label}
+                  key={i}
                   className="flex items-center gap-3 bg-surface-container-lowest p-4 rounded-xl editorial-shadow"
                 >
-                  <span className="material-symbols-outlined text-primary-container">
-                    {h.icon}
-                  </span>
-                  <span className="font-headline font-semibold text-xs text-on-surface">
-                    {h.label}
-                  </span>
+                  <EditableText
+                    section="doctor"
+                    fieldPath={`highlights.${i}.icon`}
+                    value={h.icon}
+                    as="span"
+                    className="material-symbols-outlined text-primary-container block"
+                  />
+                  <EditableText
+                    section="doctor"
+                    fieldPath={`highlights.${i}.label`}
+                    value={h.label}
+                    as="span"
+                    className="font-headline font-semibold text-xs text-on-surface block"
+                  />
                 </div>
               ))}
             </div>

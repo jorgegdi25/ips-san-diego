@@ -1,6 +1,15 @@
-import { services } from '../data/siteData';
-
+import { useContent } from './ContentContext';
+import EditableText from './editor/EditableText';
+import EditableImage from './editor/EditableImage';
 export default function ServicesSection() {
+  const { content, loading } = useContent();
+
+  const services = content?.services || [];
+
+  if (loading) {
+    return <div className="py-28 h-[600px] animate-pulse bg-surface-container-low" />;
+  }
+
   return (
     <section id="servicios" className="py-28 bg-surface">
       <div className="max-w-7xl mx-auto px-8">
@@ -12,25 +21,36 @@ export default function ServicesSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
+          {services.map((service, index) => (
             <div
-              key={service.title}
+              key={index}
               className="group bg-surface-container-lowest rounded-2xl overflow-hidden editorial-shadow hover:-translate-y-2 transition-transform duration-300"
             >
               <div className="h-56 overflow-hidden">
-                <img
+                <EditableImage 
+                  section="services"
+                  fieldPath={`${index}.image`}
+                  src={service.image}
                   alt={service.imageAlt}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  src={service.image}
                 />
               </div>
               <div className="p-8">
-                <h3 className="font-headline font-bold text-xl mb-3">
-                  {service.title}
-                </h3>
-                <p className="text-on-surface-variant text-sm mb-6 line-clamp-2">
-                  {service.description}
-                </p>
+                <EditableText 
+                  section="services"
+                  fieldPath={`${index}.title`}
+                  value={service.title}
+                  as="h3"
+                  className="font-headline font-bold text-xl mb-3 block"
+                />
+                <EditableText 
+                  section="services"
+                  fieldPath={`${index}.description`}
+                  value={service.description}
+                  as="p"
+                  className="text-on-surface-variant text-sm mb-6 line-clamp-2 block"
+                  multiline
+                />
                 <button className="flex items-center gap-2 text-primary-container font-bold text-sm group/btn">
                   Ver detalles{' '}
                   <span className="material-symbols-outlined text-lg group-hover/btn:translate-x-1 transition-transform">
