@@ -190,9 +190,20 @@ export function ContentProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify(dataToSave),
       });
-      return response.ok;
-    } catch (err) {
+
+      if (!response.ok) {
+        let errorMsg = 'Error desconocido';
+        try {
+          const errorData = await response.json();
+          errorMsg = JSON.stringify(errorData, null, 2);
+        } catch(e) {}
+        alert('Detalle de Error Vercel:\\n' + errorMsg);
+        return false;
+      }
+      return true;
+    } catch (err: any) {
       console.error('Error saving content:', err);
+      alert('Error de Red: ' + err.message);
       return false;
     }
   };
