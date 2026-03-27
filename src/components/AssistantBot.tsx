@@ -45,11 +45,13 @@ export default function AssistantBot() {
       if (data.content) {
         setMessages([...newMessages, { role: 'assistant', content: data.content }]);
       } else {
-        setMessages([...newMessages, { role: 'assistant', content: 'Lo siento, tuve un problema. ¿Podrías intentar de nuevo?' }]);
+        const errorMsg = data.error || 'Lo siento, tuve un problema. ¿Podrías intentar de nuevo?';
+        const details = data.details ? ` (${data.details})` : '';
+        setMessages([...newMessages, { role: 'assistant', content: `${errorMsg}${details}` }]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
-      setMessages([...newMessages, { role: 'assistant', content: 'Lo siento, no pude conectarme. Revisa tu conexión.' }]);
+      setMessages([...newMessages, { role: 'assistant', content: `Error de conexión: ${error.message}` }]);
     } finally {
       setIsLoading(false);
     }
