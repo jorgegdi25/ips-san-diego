@@ -75,6 +75,21 @@ export default async function handler(
       });
     });
 
+    // Verificar si la pestaña "Contenido" existe, si no, crearla
+    const spreadsheetInfo = await sheets.spreadsheets.get({
+      spreadsheetId: process.env.GOOGLE_SHEET_ID,
+    });
+    const sheetNames = spreadsheetInfo.data.sheets?.map(s => s.properties?.title) || [];
+    
+    if (!sheetNames.includes('Contenido')) {
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        requestBody: {
+          requests: [{ addSheet: { properties: { title: 'Contenido' } } }],
+        },
+      });
+    }
+
     // Actualizar (o sobrescribir) la pestaña Contenido
     await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
