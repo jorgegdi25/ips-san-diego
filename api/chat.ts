@@ -49,9 +49,9 @@ export default async function handler(
 
   try {
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
+      model: "gemini-1.5-flash",
       systemInstruction: SYSTEM_PROMPT,
-    });
+    }, { apiVersion: 'v1' });
 
     // Convertir el historial al formato de Gemini, asegurando que empiece con un mensaje de 'user'
     let history = messages.slice(0, -1).map((m: any) => ({
