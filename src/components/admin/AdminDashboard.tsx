@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'bookings' | 'analytics' | 'content'>('bookings');
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   
   const { setIsEditorActive } = useContent();
 
@@ -52,6 +53,42 @@ export default function AdminDashboard() {
       setError('Error de conexión');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    setUpdatingId(id);
+    try {
+      const response = await fetch('/api/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${password}`
+        },
+        body: JSON.stringify({ id, status: newStatus })
+      });
+
+      if (response.ok) {
+        // Actualizar UI localmente
+        setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus } : b));
+      } else {
+        const data = await response.json();
+        alert(`Error al guardar: ${data.error}`);
+      }
+    } catch (err) {
+      alert('Error de red al actualizar el estado.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Nueva': return 'bg-amber-600/20 text-amber-500 border-amber-600/30';
+      case 'Confirmada': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'Completada': return 'bg-green-500/20 text-green-500 border-green-500/30';
+      case 'Cancelada': return 'bg-red-500/20 text-red-500 border-red-500/30';
+      default: return 'bg-neutral-800 text-neutral-400 border-neutral-700';
     }
   };
 
@@ -188,17 +225,27 @@ export default function AdminDashboard() {
                         <div className="text-xs font-bold text-neutral-300 uppercase">{b.service}</div>
                         <div className="text-xs text-neutral-500 italic">{b.doctor}</div>
                       </td>
-                      <td className="px-6 py-4">
-                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${
-                           b.status === 'Nueva' ? 'bg-amber-600/20 text-amber-500' : 'bg-green-500/20 text-green-500'
-                         }`}>
-                           {b.status}
-                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                         <button className="text-neutral-500 hover:text-white transition-colors">
-                            <span className="material-symbols-outlined">edit</span>
-                         </button>
+                      <td className="px-6 py-4" colSpan={2}>
+                         <div className="flex items-center gap-3">
+                           {updatingId === b.id ? (
+                             <span className="text-xs text-neutral-400 flex items-center gap-2">
+                               <span className="w-3 h-3 border-2 border-amber-600 border-t-transparent rounded-full animate-spin"></span> 
+                               Guardando
+                             </span>
+                           ) : (
+                             <select
+                               value={b.status}
+                               onChange={(e) => handleStatusChange(b.id, e.target.value)}
+                               className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-tighter cursor-pointer outline-none border transition-colors appearance-none text-center ${getStatusColor(b.status)}`}
+                               style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                             >
+                               <option value="Nueva" className="bg-neutral-900 text-amber-500">Nueva</option>
+                               <option value="Confirmada" className="bg-neutral-900 text-blue-400">Confirmada</option>
+                               <option value="Completada" className="bg-neutral-900 text-green-500">Completada</option>
+                               <option value="Cancelada" className="bg-neutral-900 text-red-500">Cancelada</option>
+                             </select>
+                           )}
+                         </div>
                       </td>
                     </tr>
                   ))}
