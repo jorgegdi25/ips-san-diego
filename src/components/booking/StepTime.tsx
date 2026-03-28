@@ -1,15 +1,24 @@
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import type { TimeSlot } from '../../data/availabilityData';
 import { getAvailableSlots, bookingServices } from '../../data/availabilityData';
 import { useBooking } from './BookingContext';
 
 export default function StepTime() {
   const { state, update, setStep } = useBooking();
+  const [slots, setSlots] = useState<TimeSlot[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const service = bookingServices.find((s) => s.id === state.serviceId);
 
-  const slots = useMemo(() => {
-    if (!state.date || !state.serviceId) return [];
-    return getAvailableSlots(state.date, state.serviceId);
+  useEffect(() => {
+    async function fetchSlots() {
+      if (!state.date || !state.serviceId) return;
+      setIsLoading(true);
+      const available = await getAvailableSlots(state.date, state.serviceId);
+      setSlots(available);
+      setIsLoading(false);
+    }
+    fetchSlots();
   }, [state.date, state.serviceId]);
 
   const morningSlots = slots.filter((s) => {
@@ -47,7 +56,12 @@ export default function StepTime() {
         )}
       </div>
 
-      {slots.length === 0 ? (
+      {isLoading ? (
+        <div className="py-20 flex flex-col items-center justify-center text-on-surface-variant">
+          <div className="w-10 h-10 border-4 border-primary-container/20 border-t-primary-container rounded-full animate-spin mb-4"></div>
+          <p className="font-headline font-bold text-sm animate-pulse">Sincronizando con Google Calendar...</p>
+        </div>
+      ) : slots.length === 0 ? (
         <div className="text-center py-12 text-on-surface-variant">
           <span className="material-symbols-outlined text-4xl mb-2 block">
             event_busy

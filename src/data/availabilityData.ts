@@ -84,75 +84,27 @@ export const bookingDoctors: DoctorOption[] = [
   },
 ];
 
-// Mock schedule: clinic open Mon-Fri 8-19, Sat 9-14, Sun closed
-const WEEKDAY_START = 8;
-const WEEKDAY_END = 19;
-const SATURDAY_START = 9;
-const SATURDAY_END = 14;
+// Availability data and types for booking system
 
-function generateSlots(startHour: number, endHour: number, durationMin: number): TimeSlot[] {
-  const slots: TimeSlot[] = [];
-  let hour = startHour;
-  let minute = 0;
-
-  while (hour + durationMin / 60 <= endHour) {
-    const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-    // Randomly mark ~25% as unavailable to simulate bookings
-    const available = Math.random() > 0.25;
-    slots.push({ time: timeStr, available });
-
-    minute += durationMin;
-    while (minute >= 60) {
-      minute -= 60;
-      hour++;
-    }
-  }
-
-  return slots;
-}
-
-// Seed a deterministic random per date so slots don't change on re-render
-function seedRandom(dateStr: string) {
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
-    hash |= 0;
-  }
-  // Simple seeded random
-  const seed = Math.abs(hash);
-  const origRandom = Math.random;
-  let s = seed;
-  Math.random = () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-  return () => {
-    Math.random = origRandom;
-  };
-}
-
-export function getAvailableSlots(
+export async function getAvailableSlots(
   date: Date,
   serviceId: string
-): TimeSlot[] {
-  const day = date.getDay(); // 0=Sun, 6=Sat
-  if (day === 0) return []; // Sunday – closed
+): Promise<TimeSlot[]> {
+  try {
+    const dateStr = date.toISOString().split('T')[0];
+    const response = await fetch(`/api/availability?date=${dateStr}&serviceId=${serviceId}`);
+    
+    if (!response.ok) {
+      throw new Error('Error al obtener disponibilidad');
+    }
 
-  const service = bookingServices.find((s) => s.id === serviceId);
-  const duration = service?.duration ?? 30;
-
-  const dateStr = date.toISOString().split('T')[0];
-  const restore = seedRandom(dateStr + serviceId);
-
-  let slots: TimeSlot[];
-  if (day === 6) {
-    slots = generateSlots(SATURDAY_START, SATURDAY_END, duration);
-  } else {
-    slots = generateSlots(WEEKDAY_START, WEEKDAY_END, duration);
+    const data = await response.json();
+    return data.slots || [];
+  } catch (error) {
+    console.error('Error fetching availability:', error);
+    // Fallback simple por si la API falla
+    return [];
   }
-
-  restore();
-  return slots;
 }
 
 export function isDayAvailable(date: Date): boolean {

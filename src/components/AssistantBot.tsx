@@ -104,7 +104,7 @@ export default function AssistantBot() {
                   </div>
                 )}
                 <div 
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === 'user' 
                       ? 'bg-primary-container text-on-primary-container rounded-tr-sm' 
                       : 'bg-surface-container-low text-on-surface rounded-tl-sm'
