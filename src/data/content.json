@@ -116,5 +116,12 @@
     "title": "Agenda tu valoración hoy y recibe diagnóstico profesional",
     "description": "El primer paso hacia tu nueva sonrisa comienza con una cita personalizada. Nuestro equipo está listo para atenderte.",
     "buttonText": "Reservar Cita Ahora"
+  },
+  "features": {
+    "aiChat": true,
+    "booking": true,
+    "analytics": true,
+    "visualEditor": true,
+    "whatsappFloating": true
   }
 }

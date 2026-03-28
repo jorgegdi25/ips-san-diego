@@ -17,37 +17,50 @@ import { ContentProvider } from './components/ContentContext'
 import AdminDashboard from './components/admin/AdminDashboard'
 import EditorToolbar from './components/editor/EditorToolbar'
 
-function App() {
+import { useContent } from './components/ContentContext'
+
+function AppContent() {
+  const { content } = useContent();
   const isAdmin = window.location.pathname === '/admin' || window.location.hash === '#admin';
 
   if (isAdmin) {
-    return (
-      <ContentProvider>
-        <AdminDashboard />
-      </ContentProvider>
-    );
+    return <AdminDashboard />;
   }
 
+  const features = content?.features || {
+    aiChat: true,
+    booking: true,
+    whatsappFloating: true
+  };
+
+  return (
+    <BookingProvider>
+      <EditorToolbar />
+      <Navbar />
+      <main>
+        <HeroSection />
+        <AuthoritySection />
+        <DoctorSection />
+        <ServicesSection />
+        <ResultsSection />
+        <TestimonialsSection />
+        <CtaSection />
+        <LocationSection />
+      </main>
+      <Footer />
+      
+      {/* Módulos Condicionales */}
+      {features.whatsappFloating && <FloatingWhatsApp />}
+      {features.aiChat && <AssistantBot />}
+      {features.booking && <BookingDrawer />}
+    </BookingProvider>
+  );
+}
+
+function App() {
   return (
     <ContentProvider>
-      <BookingProvider>
-        <EditorToolbar />
-        <Navbar />
-        <main>
-          <HeroSection />
-          <AuthoritySection />
-          <DoctorSection />
-          <ServicesSection />
-          <ResultsSection />
-          <TestimonialsSection />
-          <CtaSection />
-          <LocationSection />
-        </main>
-        <Footer />
-        <FloatingWhatsApp />
-        <AssistantBot />
-        <BookingDrawer />
-      </BookingProvider>
+      <AppContent />
     </ContentProvider>
   )
 }

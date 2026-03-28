@@ -7,7 +7,18 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { open: openBooking } = useBooking();
-  const { isEditorActive } = useContent();
+  const { isEditorActive, content } = useContent();
+  const features = content?.features;
+  const whatsappUrl = content?.contact?.whatsappUrl || 'https://wa.me/yourphonenumber';
+
+  const handleCtaClick = () => {
+    setMenuOpen(false);
+    if (features?.booking) {
+      openBooking();
+    } else {
+      window.open(whatsappUrl, '_blank');
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -56,7 +67,7 @@ export default function Navbar() {
           <span className={`block w-6 h-0.5 bg-gray-800 transition-transform ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
 
-        <button onClick={() => openBooking()} className="hidden md:block primary-gradient text-white px-6 py-2.5 rounded-lg font-headline font-bold text-sm tracking-tight hover:opacity-90 transition-all duration-200 active:scale-95">
+        <button onClick={handleCtaClick} className="hidden md:block primary-gradient text-white px-6 py-2.5 rounded-lg font-headline font-bold text-sm tracking-tight hover:opacity-90 transition-all duration-200 active:scale-95">
           Agendar valoración
         </button>
       </div>
@@ -76,7 +87,7 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <button onClick={() => { setMenuOpen(false); openBooking(); }} className="w-full primary-gradient text-white px-6 py-3 rounded-lg font-headline font-bold text-sm mt-4 active:scale-95">
+          <button onClick={handleCtaClick} className="w-full primary-gradient text-white px-6 py-3 rounded-lg font-headline font-bold text-sm mt-4 active:scale-95">
             Agendar valoración
           </button>
         </div>

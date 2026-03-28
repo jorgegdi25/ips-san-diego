@@ -6,6 +6,16 @@ export default function CtaSection() {
   const { open: openBooking } = useBooking();
   const { content, loading } = useContent();
   const cta = content?.cta;
+  const features = content?.features;
+  const whatsappUrl = content?.contact?.whatsappUrl || 'https://wa.me/yourphonenumber';
+
+  const handleCtaClick = () => {
+    if (features?.booking) {
+      openBooking();
+    } else {
+      window.open(whatsappUrl, '_blank');
+    }
+  };
 
   if (loading || !cta) {
     return <div className="h-[400px] animate-pulse bg-[#FFF5ED]" />;
@@ -32,7 +42,7 @@ export default function CtaSection() {
             multiline
             className="text-on-primary-fixed-variant text-lg mb-10 max-w-xl mx-auto block"
           />
-          <button onClick={() => openBooking()} className="primary-gradient text-white px-12 py-5 rounded-full font-headline font-extrabold text-lg shadow-xl shadow-primary-container/20 hover:scale-105 transition-transform active:scale-95">
+          <button onClick={handleCtaClick} className="primary-gradient text-white px-12 py-5 rounded-full font-headline font-extrabold text-lg shadow-xl shadow-primary-container/20 hover:scale-105 transition-transform active:scale-95">
             <EditableText section="cta" fieldPath="buttonText" value={cta.buttonText} />
           </button>
         </div>

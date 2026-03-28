@@ -62,16 +62,25 @@ export interface CtaContent {
   buttonText: string;
 }
 
+export interface FeatureFlags {
+  aiChat: boolean;
+  booking: boolean;
+  analytics: boolean;
+  visualEditor: boolean;
+  whatsappFloating: boolean;
+}
+
 export interface Content {
   hero: HeroContent;
   services: ServiceContent[];
   contact: ContactContent;
-  location: any; // Mantenemos location como "any" por ahora si es complejo
+  location: any;
   doctor: DoctorContent;
   authority: AuthorityContent;
   results: ResultsContent;
   testimonials: TestimonialContent[];
   cta: CtaContent;
+  features: FeatureFlags;
 }
 
 interface ContentContextType {

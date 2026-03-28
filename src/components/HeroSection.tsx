@@ -8,6 +8,16 @@ export default function HeroSection() {
   const { content, loading } = useContent();
 
   const hero = content?.hero;
+  const features = content?.features;
+  const whatsappUrl = content?.contact?.whatsappUrl || 'https://wa.me/yourphonenumber';
+
+  const handleCtaClick = () => {
+    if (features?.booking) {
+      openBooking();
+    } else {
+      window.open(whatsappUrl, '_blank');
+    }
+  };
 
   if (loading || !hero) {
     return <div className="h-[600px] animate-pulse bg-surface-container-low" />;
@@ -34,10 +44,10 @@ export default function HeroSection() {
             multiline 
           />
           <div className="flex flex-wrap gap-4">
-            <button onClick={() => openBooking()} className="primary-gradient text-white px-8 py-4 rounded-lg font-headline font-bold text-base shadow-lg hover:shadow-xl transition-all active:scale-95">
+            <button onClick={handleCtaClick} className="primary-gradient text-white px-8 py-4 rounded-lg font-headline font-bold text-base shadow-lg hover:shadow-xl transition-all active:scale-95">
               <EditableText section="hero" fieldPath="primaryButton" value={hero.primaryButton} />
             </button>
-            <button onClick={() => openBooking()} className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-headline font-bold text-base hover:bg-secondary/5 transition-all">
+            <button onClick={handleCtaClick} className="border-2 border-secondary text-secondary px-8 py-4 rounded-lg font-headline font-bold text-base hover:bg-secondary/5 transition-all">
               <EditableText section="hero" fieldPath="secondaryButton" value={hero.secondaryButton} />
             </button>
           </div>

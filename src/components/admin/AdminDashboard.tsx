@@ -12,7 +12,6 @@ interface Booking {
   doctor: string;
   status: string;
 }
-
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
@@ -22,7 +21,13 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'bookings' | 'analytics' | 'content'>('bookings');
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   
-  const { setIsEditorActive } = useContent();
+  const { content, setIsEditorActive } = useContent();
+  const features = content?.features || { analytics: true, visualEditor: true };
+
+  // Redirigir si la pestaña actual se desactiva por configuración
+  if (activeTab === 'analytics' && !features.analytics) {
+    setActiveTab('bookings');
+  }
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,12 +152,14 @@ export default function AdminDashboard() {
               >
                 Pacientes
               </button>
-              <button 
-                onClick={() => setActiveTab('analytics')}
-                className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'analytics' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
-              >
-                Analíticas
-              </button>
+              {features.analytics && (
+                <button 
+                  onClick={() => setActiveTab('analytics')}
+                  className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'analytics' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
+                >
+                  Analíticas
+                </button>
+              )}
               <button 
                 onClick={() => setActiveTab('content')}
                 className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'content' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
@@ -171,16 +178,18 @@ export default function AdminDashboard() {
                  Actualizar Lista
               </button>
             )}
-            <button 
-              onClick={() => {
-                setIsEditorActive(true);
-                window.location.href = '/';
-              }}
-              className="px-6 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-600/20"
-            >
-               <span className="material-symbols-outlined text-sm">edit_document</span>
-               Abrir Editor Visual
-            </button>
+            {features.visualEditor && (
+              <button 
+                onClick={() => {
+                  setIsEditorActive(true);
+                  window.location.href = '/';
+                }}
+                className="px-6 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-amber-600/20"
+              >
+                 <span className="material-symbols-outlined text-sm">edit_document</span>
+                 Abrir Editor Visual
+              </button>
+            )}
           </div>
         </div>
 

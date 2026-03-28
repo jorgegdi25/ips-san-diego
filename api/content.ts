@@ -99,10 +99,19 @@ export default async function handler(
 
       const reconstructed = convertArrays(fetchedContent);
 
-      // Merge with local fallback data to fill any missing sections
+      // Feature Flags desde variables de entorno de Vercel (si no existen se asume true)
+      const features = {
+        aiChat: process.env.ENABLE_AI_CHAT !== 'false',
+        booking: process.env.ENABLE_BOOKING !== 'false',
+        analytics: process.env.ENABLE_ANALYTICS !== 'false',
+        visualEditor: process.env.ENABLE_VISUAL_EDITOR !== 'false',
+        whatsappFloating: process.env.ENABLE_WHATSAPP !== 'false'
+      };
+
+      // Merge with local fallback data and override with environment features
       const localPath = path.join(process.cwd(), 'src/data/content.json');
       const localData = JSON.parse(fs.readFileSync(localPath, 'utf8'));
-      const mergedContent = { ...localData, ...reconstructed };
+      const mergedContent = { ...localData, ...reconstructed, features };
 
       return res.status(200).json(mergedContent);
     } catch (sheetError) {
