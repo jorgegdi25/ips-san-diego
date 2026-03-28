@@ -92,6 +92,12 @@ export default function AdminDashboard() {
     }
   };
 
+  const getWhatsAppLink = (b: Booking) => {
+    const phoneNumber = b.phone.replace(/\D/g, '');
+    const message = `Hola ${b.name} 👋. Te escribimos de IPS San Diego para recordarte tu cita de ${b.service} con el ${b.doctor}, programada para el ${b.appointment}. ¿Nos confirmas tu asistencia? ¡Te esperamos!`;
+    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  };
+
 
   if (!isLoggedIn) {
     return (
@@ -211,15 +217,18 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4 font-display text-base font-medium">{b.name}</td>
                       <td className="px-6 py-4">
-                        <a 
-                          href={`https://wa.me/${b.phone.replace(/\D/g, '')}`} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="text-amber-600 hover:text-amber-500 hover:underline flex items-center gap-1"
-                        >
-                           <span className="material-symbols-outlined text-base">chat</span>
-                           {b.phone}
-                        </a>
+                        <div className="space-y-2">
+                          <div className="text-neutral-300 font-medium">{b.phone}</div>
+                          <a 
+                            href={getWhatsAppLink(b)} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#25D366]/10 hover:bg-[#25D366]/20 text-[#25D366] rounded-lg text-[10px] font-bold uppercase transition-all border border-[#25D366]/20 group"
+                          >
+                             <span className="material-symbols-outlined text-xs group-hover:scale-110 transition-transform">send_to_mobile</span>
+                             Enviar Recordatorio
+                          </a>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-xs font-bold text-neutral-300 uppercase">{b.service}</div>
