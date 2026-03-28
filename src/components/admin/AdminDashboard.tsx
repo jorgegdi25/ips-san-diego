@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useContent } from '../ContentContext';
+import AdminAnalytics from './AdminAnalytics';
 
 interface Booking {
   id: number;
@@ -18,7 +19,7 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'bookings' | 'content'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'analytics' | 'content'>('bookings');
   
   const { setIsEditorActive } = useContent();
 
@@ -104,6 +105,12 @@ export default function AdminDashboard() {
                 Pacientes
               </button>
               <button 
+                onClick={() => setActiveTab('analytics')}
+                className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'analytics' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
+              >
+                Analíticas
+              </button>
+              <button 
                 onClick={() => setActiveTab('content')}
                 className={`text-sm pb-1 border-b-2 transition-all ${activeTab === 'content' ? 'border-amber-600 text-white' : 'border-transparent text-neutral-500'}`}
               >
@@ -134,7 +141,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {activeTab === 'bookings' ? (
+        {activeTab === 'bookings' && (
           <div className="bg-neutral-900 rounded-3xl shadow-xl overflow-hidden border border-white/5">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
@@ -199,7 +206,13 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'analytics' && (
+          <AdminAnalytics bookings={bookings} />
+        )}
+
+        {activeTab === 'content' && (
           <div className="bg-neutral-900 border border-white/5 p-12 rounded-3xl text-center space-y-6 w-full mx-auto max-w-2xl mt-12">
             <div className="w-20 h-20 bg-amber-600/20 rounded-full mx-auto flex items-center justify-center">
               <span className="material-symbols-outlined text-amber-500 text-4xl">view_quilt</span>
